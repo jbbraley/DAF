@@ -1,0 +1,26 @@
+# ignore...
+
+# temp folder/file
+tmp/
+*.tmp
+
+# zip files
+*.zip
+
+# autosave files
+*.asv
+*.~t7
+
+# St7 analysis files
+*.LSA
+*.LSL
+*.NFA
+*.NFL
+*.LTA
+*.LTL
+
+# ms office temp files
+~$*.doc*
+~$*.xls*
+*.xlk
+~$*.ppt*
