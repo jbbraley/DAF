@@ -2,13 +2,13 @@
 % Length in feet
 L = 150;
 % Mode number
-M = 8;
+M = 2;
 % Corresponding Natural frequency (Hz)
-freq_b = 0.5;
+freq_b = 3.5;
 
 %% Set Traveler characteristics
 % Velocity (feet per second)
-vel_t = 25;
+vel_t = 45;
 
 %% Set visualization scale (amplitude of shape)
 sc = 10;
@@ -31,7 +31,7 @@ t = 0:dt:L/vel_t;
 % y_b = sc*sin(2*pi*freq_sp*x);
 n=1;
 for ii = t
-    y_b(:,n) = AA*sin(2*pi*freq_b*ii)*sin(2*pi*freq_sp*x);
+    y_b(:,n) = AA*sin(2*pi*freq_b*ii+freq_b/2)*sin(2*pi*freq_sp*x);
     n=n+1;
 end
 % Travelor horizontal position
@@ -39,14 +39,14 @@ x_t = vel_t*t;
 
 %Traveler vertical position
 for ii = 1:length(t)
-y_t(ii) = AA*sin(2*pi*freq_b*t(ii))*sin(2*pi*freq_sp*x_t(ii));
+y_t(ii) = AA*sin(2*pi*freq_b*t(ii)+freq_b/2)*sin(2*pi*freq_sp*x_t(ii));
 end
 
 %% Plots
 FH = figure;
 fh1 = subplot(2,1,1);
 %Plot shape
-ah1 = plot(x,y_b(:,1));
+ah1 = plot(x,y_b(:,1),'k');
 axis equal
 
 title(['Bridge Frequency: ' num2str(freq_b) 'Hz Vehicle Velocity: ' num2str(vel_t) ' fps']);
@@ -54,12 +54,12 @@ hold all
 xlabel('Distance (ft.)');
 fh2 = subplot(2,1,2);
 %Plot traveler acceleration
-ah2 = plot(t,y_t);
+ah2 = plot(t,y_t,'m');
 hold all
 xlabel('Time (sec)');
 %Plot structure acceleration
-acc_dof = AA*sin(2*pi*freq_b*t);
-plot(t,acc_dof,'r');
+acc_dof = AA*sin(2*pi*freq_b*t+freq_b/2);
+plot(t,acc_dof,'b');
 
 %Plot time bars
 ylim1 = get(fh1,'ylim');
@@ -74,7 +74,7 @@ for ii = t
     set(bar1,'XData',[vel_t*ii vel_t*ii])
     set(bar2,'XData',[ii ii])
     set(ah1,'YData',y_b(:,m))
-    set(spot,'YData',AA*sin(2*pi*freq_b*ii)*sin(2*pi*freq_sp*L/M/2))
+    set(spot,'YData',AA*sin(2*pi*freq_b*ii+freq_b/2)*sin(2*pi*freq_sp*L/M/2))
     set(spot2,'XData', ii)
     set(spot2, 'YData', acc_dof(m))
     drawnow 
