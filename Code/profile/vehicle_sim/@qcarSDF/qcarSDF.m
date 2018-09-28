@@ -60,8 +60,11 @@ classdef qcarSDF < handle & classio
             Bqcar = [self.c/(self.ms/self.gravity) self.k/(self.ms/self.gravity); 0 0]; 
             %% Output Matrix
             Cqcar = [0 1;... % sprung mass displacement
-                    1 0];    % sprung mass velocity
-            Dqcar = [0];
+                    1 0;...    % sprung mass velocity
+                    self.c self.k]; % contact force
+            Dqcar = [0 0;...
+                    0 0;...
+                    -self.c -self.k];
 %                        
             ssmodel = ss(Aqcar,Bqcar,Cqcar,Dqcar);
         end

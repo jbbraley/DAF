@@ -33,7 +33,7 @@ classdef VB < handle & classio
 
 %% constructor
 	methods
-		function self = qcar2()
+		function self = VB()
 		end
 	end
 
@@ -71,8 +71,10 @@ classdef VB < handle & classio
             Cqcar = [0 1 0 0;... % sprung mass displacement
                     1 0 0 0;...     % vehicle velocity
                     0 0 0 1;...  % bridge displacement
-                    0 0 1 0];    % bridge velocity
-            Dqcar = [0];
+                    0 0 1 0;...    % bridge velocity
+                    self.ct self.kt -self.ct -self.kt]; % contact force
+            Dqcar = zeros(size(Cqcar,1),size(Bqcar,2)); %[0];
+            Dqcar(5,:) = [-self.ct -self.kt];
 %                        
             ssmodel = ss(Aqcar,Bqcar,Cqcar,Dqcar);
         end

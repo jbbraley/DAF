@@ -71,6 +71,7 @@ lbh = line([truck_pos(1) truck_pos(1)],[0 bridge_pos(2)-bridge_dim(2)/2]);
 % rh = line([bridge_pos(1)-bridge_dim(1)/2 bridge_pos(1)+bridge_dim(1)/2],[road_pos road_pos]);
 axis([0 10 0 10])
 
+
 % animate displacement time history
 % pull shape positions
 truck_elev = th.Position(2);

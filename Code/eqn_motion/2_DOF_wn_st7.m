@@ -5,7 +5,7 @@ addpath(genpath('C:\Users\John\Projects_Git\st7api'));
 
 %% Load model
 FE_file = file();
-FE_file.name = '2dof_sprung-mass.st7';
+FE_file.name = 'golden-car.st7';
 FE_file.path = 'C:\Users\John\Projects_Git\DAmp\Modeling\Simple\state-space';
 scratchpath = 'C:\Temp';
 

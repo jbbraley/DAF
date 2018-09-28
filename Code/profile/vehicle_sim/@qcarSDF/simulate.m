@@ -10,4 +10,5 @@ function y = simulate(self)
  dt = diff(self.time(1:2));
 y = lsim(self.ssmodel,[[0; diff(self.profile)/dt] self.profile],self.time,self.x0);	
 	
+y(:,3) = -y(:,3)+self.ms;
 end
