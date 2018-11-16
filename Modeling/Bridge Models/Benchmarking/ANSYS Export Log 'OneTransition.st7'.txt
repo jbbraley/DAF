@@ -1,0 +1,24 @@
+________________________________________________________________________________
+
+Strand7 R2.4.6 ANSYS EXPORT LOG
+________________________________________________________________________________
+
+File:               C:\Users\John\Projects_Git\DAmp\Modeling\Bridge Models\Benchmarking\OneTransition.cdb
+Date:               1 November 2018
+Time:               3:48:46 pm
+
+EXPORT OPTIONS
+Export Format:                               BLOCKED CDB
+Partial End Release:                         Fixed
+Default Freedom Case:                        Freedom Case 1
+Pre-Stress/Non-Structural Mass Load Case:    Load Case 1
+Export Units:                                No Units
+Export Nonlinear Material:                   No
+Export Heat Transfer Data:                   No
+Export Pre-Stress/Non-Structural Mass:       No
+Export Tetra4/Tetra10 as SOLID72/SOLID92:    No
+Export Quad8 Shell as SHELL91:               No
+________________________________________________________________________________
+
+Warnings:
+

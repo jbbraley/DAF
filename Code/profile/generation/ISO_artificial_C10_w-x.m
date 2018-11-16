@@ -1,27 +1,27 @@
 %% Setup profile parameters
 % uses results from "spectral_density for comparison plots
-
-N  = 24000; %  Number of data points
-L  = 600;  % Length Of Road Profile (m)
+iter = 1; %iteration number for filename
+N  = 7875; %  Number of data points
+L  = 200;  % Length Of Road Profile (m)
 dn = 1/L;  % Frequency Band
 B  = L/N ; % Sampling Interval (m)
-C10 = 100e-6; % roughness coefficient
-w = 4.0; % waviness
+C10 = 600e-6; % roughness coefficient
+w = 2.0; % waviness
 freq_lb = 0.05; % upper bound for frequency band of included  frequency content
-freq_ub = 1; % lower bound for frequency band of included frequency content
+freq_ub = 10; % lower bound for frequency band of included frequency content
 
 %% Generate profile
 % Construct amplitudes and phase angles for each spatial frequency
 n  = dn:dn:N*dn ; % Spatial Frequency Band (start higher in frequency to avoid large global elevation changes)
-sub_ind = find(n==freq_lb,1,'first'):find((n-freq_ub)>0,1,'first'); 
+sub_ind = find(n<freq_lb,1,'last'):find((n-freq_ub)>0,1,'first'); 
 n_sub = n(sub_ind); %
-nangle = 2*pi/wave; % angular frequency band
+nangle = 2*pi*n_sub; % angular frequency band
 psd = C10*(10*n_sub).^(-w); % fitted psd value for each frequency band
 del_angle = (nangle(end)-nangle)/(length(n_sub)-1);
 Amp1 = sqrt(psd.*del_angle/pi); % amplitude
 
-% rng('shuffle') %shuffle random number generator
-rng(55); % control random number generator for repeatability
+rng('shuffle') %shuffle random number generator
+% rng(55); % control random number generator for repeatability
 phi =  2*pi*rand(size(n)); % Random Phase Angle (uniformly ditributed)
 phi = phi(sub_ind);
 % Sum sinusoids at each profile step
@@ -68,11 +68,11 @@ xlim([1e-3 20])
 
 %% Save profile to file
 save_file = file();
-save_file.name = ['ISO_C10-' num2str(C10*1e6) 'e-06_w-' num2str(w) '.csv'];
-save_file.path = 'C:\Users\John\Projects_Git\DAmp\profiles\artificial\ISO8608';
+save_file.name = ['ISO_C10-' num2str(C10*1e6) 'e-06_w-' num2str(w) '_' num2str(iter) '.csv'];
+save_file.path = 'C:\Users\John\Projects_Git\DAmp\profiles\artificial\model_validation';
 prof_dist = x*39.3701; % in.
-prof_elev = hx*39.3701; % in.
+prof_elev = (hx-hx(1))*39.3701; % in.
 
-dlmwrite(save_file.fullname, [prof_dist' prof_elev'], ',');
+dlmwrite(save_file.fullname, [prof_dist' prof_elev'],'delimiter', ',', 'precision', 5);
 
 

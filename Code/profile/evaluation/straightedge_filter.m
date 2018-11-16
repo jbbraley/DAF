@@ -10,10 +10,11 @@ while ind2<length(profile)
     ind1 = ind1+1; ind2 = find(dist>=(straightedge_length+dist(ind1)),1,'first');
     if isempty(ind2); ind2 = length(profile); end
     slope = interp1([dist(ind1) dist(ind2)],[profile(ind1) profile(ind2)],dist(ind1:ind2));
-    push_ind = find(profile(ind1:ind2)-slope+straightedge_deviation<0);
-    profile(push_ind+ind1-1) = slope(push_ind)-straightedge_deviation;
-    pull_ind = find(profile(ind1:ind2)-slope-straightedge_deviation>0);
-    profile(pull_ind+ind1-1) = slope(pull_ind)+straightedge_deviation;
+    dev = straightedge_deviation * sqrt(diff(profile([ind2 ind1]))^2+diff(dist([ind2 ind1]))^2)/diff(dist([ind2 ind1]));
+    push_ind = find(profile(ind1:ind2)-slope+dev<0);
+    profile(push_ind+ind1-1) = slope(push_ind)-dev;
+    pull_ind = find(profile(ind1:ind2)-slope-dev>0);
+    profile(pull_ind+ind1-1) = slope(pull_ind)+dev;
     
     exitflag = any([~isempty(push_ind) ~isempty(pull_ind) exitflag]);
 end
