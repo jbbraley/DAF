@@ -9,7 +9,7 @@ classdef dbl_bridge_vehicle < handle
 
 %% object properties
 	properties
-        EI              % flexural reigidity (lb-in^2)
+        EI              % flexural rigidity (lb-in^2)
         L               % span length (in) (length of single span)
         profile         % elevation profile over which the model traverses (in);
         dist            % vector specifying location of each profile point (in)
@@ -18,6 +18,7 @@ classdef dbl_bridge_vehicle < handle
         ct               % damping coefficient (lb-s/in)
         mt              % mass of truck (lb)
         mb              % mass of single span of bridge (lb)
+        db = 0;              % bridge percent damping
         x               % location to record bridge results (in)
         x0 =[];         % initial state conditions [bridge velocity, bridge disp, vehicle velocity (vert.), vehicle disp (vert)]
         gravity = 386.09; % in/sec^2
@@ -33,6 +34,8 @@ classdef dbl_bridge_vehicle < handle
         ssmodel_off
         ssout
         dt
+        max_deflection
+        fnb  % bridge natural frequency (Hz)
 	end
 
 %% private properties
@@ -52,6 +55,13 @@ classdef dbl_bridge_vehicle < handle
 
 %% dependent methods
 	methods 
+        function max_deflection = get.max_deflection(self)
+            max_deflection = self.mt*self.L^3/(pi^4*self.EI); % self.mt*self.L^3*0.015/(self.EI);
+        end
+        
+        function fnb = get.fnb(self)
+           fnb = pi/2*sqrt(self.EI/(self.mb/self.gravity*self.L^3)); 
+        end
                
         function time = get.time(self)
         %% time - get time based on distance and velocity
@@ -73,7 +83,7 @@ classdef dbl_bridge_vehicle < handle
         
         function ssmodel = get.ssmodel(self)
            %%  contains the matrices A & B for input into the ssfun
-           A = @(t) [-self.ct/(self.mb/self.gravity)*(sin(pi*self.vel*t/self.L))^2 -self.kt/(self.mb/self.gravity)*(sin(pi*self.vel*t/self.L))^2-pi^4*self.EI/(self.mb/self.gravity*self.L^3) self.ct/(self.mb/self.gravity)*(sin(pi*self.vel*t/self.L)) self.kt/(self.mb/self.gravity)*(sin(pi*self.vel*t/self.L));...
+           A = @(t) [-self.ct/(self.mb/self.gravity)*(sin(pi*self.vel*t/self.L))^2-2*self.db*(2*pi*self.fnb) -self.kt/(self.mb/self.gravity)*(sin(pi*self.vel*t/self.L))^2-pi^4*self.EI/(self.mb/self.gravity*self.L^3) self.ct/(self.mb/self.gravity)*(sin(pi*self.vel*t/self.L)) self.kt/(self.mb/self.gravity)*(sin(pi*self.vel*t/self.L));...
                1 0 0 0;...
                self.ct/(self.mt/self.gravity)*sin(pi*self.vel*t/self.L) self.kt/(self.mt/self.gravity)*sin(pi*self.vel*t/self.L) -self.ct/(self.mt/self.gravity) -self.kt/(self.mt/self.gravity);...
                0 0 1 0];
@@ -89,7 +99,7 @@ classdef dbl_bridge_vehicle < handle
         
         function ssmodel_off = get.ssmodel_off(self)
            %% contains matrices for input into ssfun for when the vehicle is not on the bridge (i.e. before or after)
-           A = [0 -pi^4*self.EI/(self.mb/self.gravity*self.L^3) 0 0;...
+           A = [-2*self.db*(2*pi*self.fnb) -pi^4*self.EI/(self.mb/self.gravity*self.L^3) 0 0;...
                1 0 0 0;...
                0 0 -self.ct/(self.mt/self.gravity) -self.kt/(self.mt/self.gravity);...
                0 0 1 0];

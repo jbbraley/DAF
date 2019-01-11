@@ -10,18 +10,21 @@ classdef qcarSDF < handle & classio
 	properties        
         profile         % elevation profile over which the model traverses (in);
         dist            % vector specifying location of each profile point (in)
+         L               % span length (in) (length of single span)
         vel               % vehicle speed (in/sec)
-        k               % suspension stiffness (lb/in)
-        c               % damping coefficient (lb-s/in)
-        ms              % mass of main sprung mass (lb)
+        kt               % suspension stiffness (lb/in)
+        ct               % damping coefficient (lb-s/in)
+        mt              % mass of main sprung mass (lb)
         x0 = [0 0]';% initial conditions of states
         gravity = 386.09; % in/sec^2       
+        bridge_start    % location of beginning of bridge (in)
 	end
 
 %% dependent properties
 	properties (Dependent)
        time            % time vector for each step of simulation
        ssmodel         % state space model
+       dt
 	end
 
 %% private properties
@@ -30,7 +33,7 @@ classdef qcarSDF < handle & classio
 
 %% constructor
 	methods
-		function self = qcar2()
+		function self = qcarSDF()
 		end
 	end
 
@@ -48,23 +51,27 @@ classdef qcarSDF < handle & classio
                 if any(round(diff(self.dist),5)~=round(diff(self.dist(1:2)),5)) || self.dist(1)~=0
                     fprintf('distance must start from zero and be evenly spaced, constructing new distance vector based on average distance step\n')
                     dx = round(mean(diff(self.dist)),5);
-                    self.dist = 0:dx:(length(self.dist)-1)*dx;
+                    self.dist = (0:dx:(length(self.dist)-1)*dx)';
                 end
-                time = self.dist/self.vel;
+                time = (self.dist-self.bridge_start)/self.vel;
             end
+        end
+        
+        function dt = get.dt(self)
+            dt = diff(self.time(1:2));
         end
         
         function ssmodel = get.ssmodel(self)
             %% Construct linear state space model 
-            Aqcar = [-self.c/(self.ms/self.gravity) -self.k/(self.ms/self.gravity); 1 0]; 
-            Bqcar = [self.c/(self.ms/self.gravity) self.k/(self.ms/self.gravity); 0 0]; 
+            Aqcar = [-self.ct/(self.mt/self.gravity) -self.kt/(self.mt/self.gravity); 1 0]; 
+            Bqcar = [self.ct/(self.mt/self.gravity) self.kt/(self.mt/self.gravity); 0 0]; 
             %% Output Matrix
             Cqcar = [0 1;... % sprung mass displacement
                     1 0;...    % sprung mass velocity
-                    self.c self.k]; % contact force
+                    self.ct self.kt]; % contact force
             Dqcar = [0 0;...
                     0 0;...
-                    -self.c -self.k];
+                    -self.ct -self.kt];
 %                        
             ssmodel = ss(Aqcar,Bqcar,Cqcar,Dqcar);
         end

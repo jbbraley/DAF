@@ -53,10 +53,15 @@ yy = model.simulate;
 % compute over sample length
 travel = diff(yy(:,5));
 
-nel = nearest(sample_length/dd+1);
-left = rem(length(travel),nel);
-IRI = 1/sample_length.*sum(reshape(abs(travel(1:end-left)),nel,[]),1);
-if left
-    IRI(end+1) = 1/(dist(end)-dist(end-left+1)).*sum(abs(travel(end-left+1:end)),1);
+if length(sample_length)==2
+    IRI = sum(abs(travel(sample_length(1):sample_length(2))),1)/(diff(dist(sample_length)));
+else
+    nel = nearest(sample_length/dd+1);
+    left = rem(length(travel),nel);
+    IRI = 1/sample_length.*sum(reshape(abs(travel(1:end-left)),nel,[]),1);
+    if left
+        IRI(end+1) = 1/(dist(end)-dist(end-left+1)).*sum(abs(travel(end-left+1:end)),1);
+    end
 end
+    
 

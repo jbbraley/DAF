@@ -20,13 +20,16 @@ y = zeros(length(self.time),size(self.ssout{1}(1),1));
 % get indices of vehicle on and off the bridge
 vehicle_on = find(self.time>=0,1,'first');
 vehicle_off = find(self.time>(2*self.L/self.vel),1,'first');
-
+vehicle_mid = ceil((vehicle_off-vehicle_on)/2)+vehicle_on-1; 
+if rem(diff([vehicle_on vehicle_off]),2)==0; extra_ind = 1; else extra_ind = 0; end
 % Compute each state
 % Run before vehicle enters bridge
  % state space model
 lssmodel = ss(self.ssmodel_off{1},[self.ssmodel_off{2} [0 0 -self.gravity 0]'],self.ssout{2},[self.ssout{3} [0 0 0 0 0]']);
-y(1:(vehicle_on-1),:) = lsim(lssmodel,[u(1:(vehicle_on-1),:) ones((vehicle_on-1),1)],self.time(1:(vehicle_on-1))-self.time(1),self.x0);
-z(2:(vehicle_on),:) = (y(1:(vehicle_on-1),1:4)'-self.ssout{3}(1:4,:)*u(1:(vehicle_on-1),:)')'/(self.ssout{2}(1:4,:));
+if vehicle_on>1 
+    y(1:(vehicle_on-1),:) = lsim(lssmodel,[u(1:(vehicle_on-1),:) ones((vehicle_on-1),1)],self.time(1:(vehicle_on-1))-self.time(1),self.x0);
+    z(2:(vehicle_on),:) = (y(1:(vehicle_on-1),1:4)'-self.ssout{3}(1:4,:)*u(1:(vehicle_on-1),:)')'/(self.ssout{2}(1:4,:));
+end
 % for ii = 1:(vehicle_on-1)
 %    
 %     % next state
@@ -43,13 +46,18 @@ for ii = vehicle_on:(vehicle_off-1)
 
    % next state
    z(ii+1,:) = self.ssfun(z(ii,:)',u(ii,:)',A,B,F)*self.dt+z(ii,:)';
+   if ii==vehicle_mid
+       z(ii+1,1:2) = z(ii+1,1:2)*1; 
+   end
    
    % Output   
    y(ii,:) = self.ssout_fun(z(ii,:)',u(ii,:)',self.ssout{1}(time),self.ssout{3});
-end 
+end
 
-y(vehicle_off:length(self.time),:) = lsim(lssmodel,[u(vehicle_off:length(self.time),:) ones(length(self.time)-vehicle_off+1,1)],self.time(vehicle_off:length(self.time))-self.time(vehicle_off),z(vehicle_off,:)');
-z((vehicle_off+1):(length(self.time)+1),:) = (y(vehicle_off:length(self.time),1:4)'-self.ssout{3}(1:4,:)*u(vehicle_off:length(self.time),:)')'/(self.ssout{2}(1:4,:));
+if vehicle_off<length(self.time)
+    y(vehicle_off:length(self.time),:) = lsim(lssmodel,[u(vehicle_off:length(self.time),:) ones(length(self.time)-vehicle_off+1,1)],self.time(vehicle_off:length(self.time))-self.time(vehicle_off),z(vehicle_off,:)');
+    z((vehicle_off+1):(length(self.time)+1),:) = (y(vehicle_off:length(self.time),1:4)'-self.ssout{3}(1:4,:)*u(vehicle_off:length(self.time),:)')'/(self.ssout{2}(1:4,:));
+end
 % for ii = vehicle_off:length(self.time)
 %     % next state
 %    z(ii+1,:) = self.ssfun(z(ii,:)',u(ii,:)',self.ssmodel_off{1},self.ssmodel_off{2},self.ssmodel_off{3})*self.dt+z(ii,:)';
@@ -60,6 +68,7 @@ z((vehicle_off+1):(length(self.time)+1),:) = (y(vehicle_off:length(self.time),1:
 
 % add static deflection and amplification to output
 z_st = zeros(length(self.time),1);
+
 z_st(vehicle_on:(vehicle_off-1)) = -self.mt*self.L^3/(pi^4*self.EI)*sin(pi*self.vel*self.time(vehicle_on:(vehicle_off-1))/self.L);
 z_amp = (y(:,1)-z_st)./min(z_st);
 y = [y z_st z_amp];

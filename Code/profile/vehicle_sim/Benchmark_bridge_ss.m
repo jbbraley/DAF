@@ -1,5 +1,6 @@
 %% Initiate
 vb_ss = ss_bridge_vehicle();
+vb_ssmodel = sgl_bridge_vehicle();
 
 fnb = 3; % natural frequency of bridge
 fnv = 3.2; % natural frequency of vehicle
@@ -20,26 +21,35 @@ vb_ss.mb = mb*vb_ss.gravity;
 vb_ss.ct = dt*2*sqrt(vb_ss.kt*vb_ss.mt/vb_ss.gravity);
 vb_ss.EI = mb*vb_ss.L^3*wnb^2/pi^4;
 
+vb_ssmodel.L = length*12;
+vb_ssmodel.vel = vel;
+vb_ssmodel.kt = (wnv)'.^2.*mt; % suspension stiffness for vehicle
+vb_ssmodel.mt = mt*vb_ssmodel.gravity;
+vb_ssmodel.mb = mb*vb_ssmodel.gravity;
+vb_ssmodel.ct = dt*2*sqrt(vb_ssmodel.kt*vb_ssmodel.mt/vb_ssmodel.gravity);
+vb_ssmodel.EI = mb*vb_ss.L^3*wnb^2/pi^4;
+
 %% Load profile
 pro_file = file();
 
-pro_file.name = 'EB_right_1_R.csv';
-pro_file.path = 'C:\Users\John\Projects_Git\I76\Profiles\measured\for_simulation\EB_right';
+pro_file.name = 'ISO_C10-300e-06_w-2_1.csv';
+pro_file.path = 'C:\Users\John\Projects_Git\DAmp\profiles\artificial\model_validation';
 file_cont = dlmread(pro_file.fullname,',');
 
-% chop profile into segments equal to bridge length.
-dx = mean(diff(file_cont(1:50,1)));
-prof_start = round(((500+111)*12+8)/dx);
-block_size = round(vb_ss.L/dx);
-prof_end = floor((size(file_cont,1)-prof_start+1)/block_size)*block_size+prof_start-1;
-block_inds = prof_start:block_size:size(file_cont,1);
+% % chop profile into segments equal to bridge length.
+% dx = mean(diff(file_cont(1:50,1)));
+% prof_start = round(((500+111)*12+8)/dx);
+% block_size = round(vb_ss.L/dx);
+% prof_end = floor((size(file_cont,1)-prof_start+1)/block_size)*block_size+prof_start-1;
+% block_inds = prof_start:block_size:size(file_cont,1);
+% 
+% profile = reshape(file_cont(prof_start:prof_end,2),block_size,[]);
+% vb_ss.dist = (1:size(profile,1))*dx;
+% 
+% %start profile at zero amplitude 
+% profile = profile-profile(1,:);
 
-profile = reshape(file_cont(prof_start:prof_end,2),block_size,[]);
-vb_ss.dist = (1:size(profile,1))*dx;
-
-%start profile at zero amplitude 
-profile = profile-profile(1,:);
-
+vb_dist = 
 % make vehicle pre-displaced by self-weight
 vb_ss.x0(4) = -vb_ss.mt/vb_ss.kt;
 
