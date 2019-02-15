@@ -10,11 +10,11 @@ function y = simulate(self)
 u = [[0; diff(self.profile)/self.dt] self.profile]; % profile velocity and displacement
 
 if isempty(self.x0)
-    self.x0 = [0 0 0 -self.mt/self.kt]';% initial conditions of states (start with vehicle displaced by deadload)
+    self.x0 = [0 0 0 -self.mt/self.kt];% initial conditions of states (start with vehicle displaced by deadload)
 end
 % preallocate state space
 z = zeros(length(self.time),length(self.x0));
-z = [self.x0'; z];
+z = [self.x0; z];
 % preallocate results
 y = zeros(length(self.time),size(self.ssout{1}(1),1));
 
