@@ -1,4 +1,4 @@
-classdef dbl_bridge_vehicle < handle
+classdef dbl_bridge_vehicle < vb_base
 %% classdef ss_bridge_vehicle
 % 
 % 
@@ -9,33 +9,16 @@ classdef dbl_bridge_vehicle < handle
 
 %% object properties
 	properties
-        EI              % flexural rigidity (lb-in^2)
-        L               % span length (in) (length of single span)
-        profile         % elevation profile over which the model traverses (in);
-        dist            % vector specifying location of each profile point (in)
-        vel             % vehicle speed (in/sec)
-        kt               % suspension stiffness (lb/in)
-        ct               % damping coefficient (lb-s/in)
-        mt              % mass of truck (lb)
-        mb              % mass of single span of bridge (lb)
-        db = 0;              % bridge percent damping
-        x               % location to record bridge results (in)
-        x0 =[];         % initial state conditions [bridge velocity, bridge disp, vehicle velocity (vert.), vehicle disp (vert)]
-        gravity = 386.09; % in/sec^2
-        ssfun = @(z,u,A,B,F) A*z+B*u+F;
-        ssout_fun = @(z,u,C,D) C*z+D*u;
-        bridge_start = 0;    % location of beginning of bridge (in)
+        
 	end
 
 %% dependent properties
 	properties (Dependent)
-        time
         ssmodel
         ssmodel_off
         ssout
-        dt
-        max_deflection
-        fnb  % bridge natural frequency (Hz)
+        max_deflection      
+        DL_disp
 	end
 
 %% private properties
@@ -56,29 +39,11 @@ classdef dbl_bridge_vehicle < handle
 %% dependent methods
 	methods 
         function max_deflection = get.max_deflection(self)
-            max_deflection = self.mt*self.L^3/(pi^4*self.EI); % self.mt*self.L^3*0.015/(self.EI);
+            max_deflection = self.mt*self.L^3*0.015/(self.EI); %self.mt*self.L^3/(pi^4*self.EI); % 
         end
         
-        function fnb = get.fnb(self)
-           fnb = pi/2*sqrt(self.EI/(self.mb/self.gravity*self.L^3)); 
-        end
-               
-        function time = get.time(self)
-        %% time - get time based on distance and velocity
-            if isempty(self.dist) || isempty(self.vel)
-                time = [];
-            else
-                if any(round(diff(self.dist),5)~=round(diff(self.dist(1:2)),5)) || self.dist(1)~=0
-                    fprintf('distance must start from zero and be evenly spaced, constructing new distance vector based on average distance step\n')
-                    dx = round(mean(diff(self.dist)),5);
-                    self.dist = (0:dx:(length(self.dist)-1)*dx)';
-                end
-                time = (self.dist-self.bridge_start)/self.vel;
-            end
-        end
-        
-        function dt = get.dt(self)
-            dt = diff(self.time(1:2));
+        function DL_disp = get.DL_disp(self)
+            DL_disp = 1/185*self.mb*self.L^3/(self.EI);
         end
         
         function ssmodel = get.ssmodel(self)
