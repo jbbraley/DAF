@@ -7,7 +7,7 @@ load('vehicles.mat');
 
 % get bridge parameters from stiffness value and 1st nat. freq.
 load('bridges.mat')
-stiff_factors = [1 1.2 1.4];
+stiff_factors = 1; %[1 1.2 1.4];
 for ii = 1:length(bridges.nf)
     for jj = 1:length(bridges.K_mid{ii})
         for kk = 1:length(stiff_factors)

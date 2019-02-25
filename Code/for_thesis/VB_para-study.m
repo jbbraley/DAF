@@ -159,3 +159,6 @@ plot(profile_offset, permute(min(yp(:,1,:),[],1),[3 2 1])/LLdisp,'-ok');
 xlabel('Profile Offset (ft.)')
 ylabel('Bridge Displacement Amplification')
 ylim([1 2.4])
+
+%% Look at vehicle frequency as a function of beam frequency
+% (i.e.) is matching frequencies worst-case scenario?

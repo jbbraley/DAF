@@ -21,6 +21,7 @@ y = zeros(length(self.time),size(self.ssout{1}(1),1));
 % get indices of vehicle on and off the bridge
 vehicle_on = find(self.time>=0,1,'first');
 vehicle_off = find(self.time>(self.L/self.vel),1,'first');
+if isempty(vehicle_off); vehicle_off = length(self.time)+1; end
 vehicle_mid = ceil((vehicle_off-vehicle_on)/2)+vehicle_on-1;
 if rem(diff([vehicle_on vehicle_off]),2)==0; extra_ind = 1; else extra_ind = 0; end
 % Compute each state

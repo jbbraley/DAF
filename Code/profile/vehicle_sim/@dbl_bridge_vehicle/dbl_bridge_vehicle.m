@@ -38,8 +38,9 @@ classdef dbl_bridge_vehicle < vb_base
 
 %% dependent methods
 	methods 
+        % max static deflection based on generalized stiffness
         function max_deflection = get.max_deflection(self)
-            max_deflection = self.mt*self.L^3*0.015/(self.EI); %self.mt*self.L^3/(pi^4*self.EI); % 
+            max_deflection = self.mt*self.L^3/(pi^4*self.EI); %self.mt*self.L^3*0.015/(self.EI); 
         end
         
         function DL_disp = get.DL_disp(self)
