@@ -22,6 +22,6 @@ numLanes = 1;
 
 % Build traffic csv file
 for ii = 1:length(fact)
-    putfile.name = ['traffic_' num2str(NumVehicles,3) '_' num2str(minspacing(ii)) '-' num2str(maxspacing(ii)) '.txt'];
+    putfile.name = ['traffic_' num2str(NumVehicles,3) '_' num2str(minspacing(ii)) '-' num2str(maxspacing(ii)) '.csv'];
     [locations{ii}, ids{ii}] = BuildTraffic(vfile.fullname, putfile.fullname, NumVehicles, minspacing(ii), maxspacing(ii), numLanes);
 end
