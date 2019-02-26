@@ -1,5 +1,5 @@
 % traffic density factor
-fact = 1:5;
+fact = [1:5 14];
 % File containing vehicle information
 vfile = file();
 vfile.name = 'vehicles.csv';
