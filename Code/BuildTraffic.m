@@ -52,7 +52,7 @@ end
 %offset axle id's 
 axle_id = axle_id+veh_ind_offset;
 
-axle_loc = (axle_loc*-1)*12+loc_offset; % position all vehicles before location 0, convert to inches
+axle_loc = (axle_loc-axle_loc(end))*12+loc_offset; % position all vehicles before location 0, convert to inches
 
 % Create and write table to file
 Traffic_Table = table(axle_loc,axle_id);
