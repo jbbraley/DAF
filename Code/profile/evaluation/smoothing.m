@@ -1,6 +1,6 @@
 %% smooth real profile with rolling straight-edge requirements
 % straightedge specifications
-s_length = 10:2:24; % ft
+s_length = 10:24; % ft
 s_dev = 0.125:0.125:0.5; % in
 
 % directory to save filtered profiles
@@ -29,9 +29,9 @@ legend({'Profile as measured'; 'Smoothed to 1/8" over 10ft.'})
 
 %Define state space model parameters
 vb = sgl_bridge_vehicle();
-vb.L = 100*12;
+vb.L = 140*12;
 vb.EI = 2.196E+13; % 576000*700*1000*12^2;
-vb.mb = 2641*386.09*100/140; %46e4;
+vb.mb = 2641*386.09; %46e4;
 vb.vel = 720;
 vb.bridge_start = 0; 
 
@@ -61,7 +61,9 @@ for ii = 1:length(s_length)
 end
 
 % plot amplification
+damp_raw = min(y0(:,1))/-vb.max_deflection;
 amp = permute(min(yy(:,1,:,:),[],1),[3 4 1 2])/-vb.max_deflection;
+amp_red = (damp_raw-amp)/damp_raw;
 figure
 plot(s_length,amp)
 legend(num2str(s_dev',3))

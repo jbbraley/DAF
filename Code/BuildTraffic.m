@@ -1,6 +1,7 @@
 function [axle_loc, axle_id] = BuildTraffic(vehicle_fname, write_name, numVehicles, minspace, maxspace, lanes)
 %Builds a csv file containing axle spring-mass system spacing
-
+veh_ind_offset = 3;
+loc_offset = -(minspace+20)*12;
 distr = 'uniform';
 
 if nargin < 3
@@ -48,9 +49,10 @@ for kk = 1:lanes
 end
 
 %put all axles into single column
+%offset axle id's 
+axle_id = axle_id+veh_ind_offset;
 
-
-axle_loc = (axle_loc*-1)*12; % position all vehicles before location 0, convert to inches
+axle_loc = (axle_loc*-1)*12+loc_offset; % position all vehicles before location 0, convert to inches
 
 % Create and write table to file
 Traffic_Table = table(axle_loc,axle_id);
