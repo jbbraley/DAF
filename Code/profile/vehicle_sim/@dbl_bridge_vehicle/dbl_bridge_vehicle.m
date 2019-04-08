@@ -9,11 +9,12 @@ classdef dbl_bridge_vehicle < vb_base
 
 %% object properties
 	properties
-        
+        window_report   % portion of response time history to consider
 	end
 
 %% dependent properties
 	properties (Dependent)
+        bridge_inds
         ssmodel
         ssmodel_off
         ssout
@@ -38,6 +39,12 @@ classdef dbl_bridge_vehicle < vb_base
 
 %% dependent methods
 	methods 
+        function bridge_inds = get.bridge_inds(self)
+            start_ind = find(self.time>=0,1,'first');
+            end_ind = find(self.dist>=(2*self.L+self.bridge_start),1,'first');
+            bridge_inds = [start_ind end_ind];
+        end
+        
         % max static deflection based on generalized stiffness
         function max_deflection = get.max_deflection(self)
             max_deflection = self.mt*self.L^3/(pi^4*self.EI); %self.mt*self.L^3*0.015/(self.EI); 

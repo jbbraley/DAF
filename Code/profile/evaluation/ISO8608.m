@@ -24,11 +24,11 @@ nfft = [];  % use default nfft lines
 % ISO 8608 Gd(n) = Cn^(-w)
 % linear fit to log of predictors and results
 if isempty(w)
-    c = polyfit(log(ff(2:end)),log(pxx(2:end)),1);
+    c = polyfit(log(ff(15:1500)),log(pxx(15:1500)),1);
     C = exp(c(2));
     W = -c(1);
 else
-    c = mean(log(pxx(2:end))+w*log(ff(2:end)));
+    c = mean(log(pxx(15:1500))+w*log(ff(15:1500)));
     C = exp(c);
 	W = w;
 end

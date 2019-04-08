@@ -17,7 +17,7 @@ classdef qcarSDF < handle & classio
         mt              % mass of main sprung mass (lb)
         x0 = [0 0]';% initial conditions of states
         gravity = 386.09; % in/sec^2       
-        bridge_start    % location of beginning of bridge (in)
+        bridge_start=0;    % location of beginning of bridge (in)
 	end
 
 %% dependent properties

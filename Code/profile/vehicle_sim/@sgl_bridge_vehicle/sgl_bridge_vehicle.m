@@ -14,6 +14,7 @@ classdef sgl_bridge_vehicle < vb_base
 
 %% dependent properties
 	properties (Dependent)
+        bridge_inds
         ssmodel
         ssmodel_off
         ssout
@@ -38,8 +39,15 @@ classdef sgl_bridge_vehicle < vb_base
 
 %% dependent methods
 	methods 
+
+        function bridge_inds = get.bridge_inds(self)
+            start_ind = find(self.time>=0,1,'first');
+            end_ind = find(self.dist>=(self.L+self.bridge_start),1,'first');
+            bridge_inds = [start_ind end_ind];
+        end
+
         function max_deflection = get.max_deflection(self)
-            max_deflection = self.mt*self.L^3/(48*self.EI);
+            max_deflection = 2*self.mt*self.L^3/(pi^4*self.EI); %self.mt*self.L^3/(48*self.EI);
         end
         
         function DL_disp = get.DL_disp(self)

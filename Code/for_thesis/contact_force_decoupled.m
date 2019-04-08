@@ -97,6 +97,32 @@ ylabel('bridge displacement (in)')
 legend({'uncoupled model'; 'coupled model'})
 xlim([0 2.3])
 
+%% quantify differences
+% max differences
+% align
+dat_uncoup = yb1(:,1);
+dat_coup = interp1(vb_ss.time,yvb(:,1),bm.time)';
+force_uncoup = c_force1;
+force_coup = c_force2;
+temp = veh.time';
+
+
+diff_dat=(dat_uncoup-dat_coup);
+mae_dat = sum(abs(diff_dat))/length(diff_dat);
+mae_perc = mae_dat/abs(min(dat_coup));
+max_diff = min(dat_uncoup)-min(dat_coup);
+max_diff_perc = max_diff/(min(dat_coup));
+fh = plotter('thesis_large');
+plot(bm.time,100*diff_dat/min(dat_coup));
+xlim([bm.time(1) max(bm.time)]);
+fh.xlabel = 'time (sec)';
+fh.ylabel = 'Percent Difference';
+ytickformat(fh.ah, 'percentage');
+fh.refresh
+
+dat_copy = [min(dat_coup) min(dat_uncoup) max_diff_perc mae_dat mae_perc];
+
+
 %% end of use
 
 
