@@ -32,6 +32,7 @@ classdef vb_base < handle
         time
         dt
         fnb  % bridge natural frequency (Hz)
+        bridge_time
 	end
 
 %% private properties
@@ -71,6 +72,15 @@ classdef vb_base < handle
         
         function dt = get.dt(self)
             dt = diff(self.time(1:2));
+        end
+        
+        function set.dt(self,value)
+%             self.dt = value;
+            % interpolate based on time step
+            new_time = self.time(1):value:self.time(end);
+            new_dist = new_time*self.vel+self.bridge_start;
+            self.profile = interp1(self.dist,self.profile,new_dist)';
+            self.dist = new_dist';               
         end
         
        

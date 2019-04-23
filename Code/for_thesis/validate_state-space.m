@@ -31,12 +31,67 @@ vb_dbl.dist = file_cont(:,1);
 vb_dbl.profile = file_cont(:,2)-file_cont(1,2);
 
 vb_sgl = vb_dbl.clone(vb_sgl);
+vb_sgl2 = vb_sgl.clone(vb_sgl);
+vb_sgl2.dt = vb_sgl2.dt/2;
+
+vb_sgl3 = vb_sgl.clone(vb_sgl);
+vb_sgl3.dt = vb_sgl3.dt/4;
+
 y2 = vb_dbl.simulate;
 y1 = vb_sgl.simulate;
+y12 = vb_sgl2.simulate;
+
+y13 = vb_sgl3.simulate;
 
 %% Visualize Single Span
 figure
-plot(vb_sgl.time,y1(:,1))
+plot(vb_sgl.time(vb_sgl.bridge_inds(1):vb_sgl.bridge_inds(2)),y1(vb_sgl.bridge_inds(1):vb_sgl.bridge_inds(2),1))
+hold all
+plot(vb_sgl2.time(vb_sgl2.bridge_inds(1):vb_sgl2.bridge_inds(2)),y12(vb_sgl2.bridge_inds(1):vb_sgl2.bridge_inds(2),1));
+plot(vb_sgl3.time,y13(:,1));
+
+%% mean absolute error
+y12_dec = interp1(vb_sgl2.time,y12(:,1),vb_sgl.time);
+diff12=abs(y12_dec(1:end-1)-y1((1:end-1),1));
+mae1 = sum(diff12(vb_sgl.bridge_inds(1):vb_sgl.bridge_inds(2)))/(numel(y1(vb_sgl.bridge_inds(1):vb_sgl.bridge_inds(2),1))-1)
+mae1_perc = mae1/abs(min(y12(vb_sgl2.bridge_inds(1):vb_sgl2.bridge_inds(2),1)))
+mae1_max_perc = max(diff12(vb_sgl.bridge_inds(1):vb_sgl.bridge_inds(2)))/abs(min(y12(vb_sgl2.bridge_inds(1):vb_sgl2.bridge_inds(2),1)));
+figure
+plot(vb_sgl.time(1:end-1),diff12/abs(min(y12(:,1))))
+
+%% loop through a bunch of time step sizes
+steps = .00005*(1:10);
+for ii = 1:10
+    vb_study = vb_sgl.clone(vb_sgl);
+    vb_study.dt = steps(ii);
+    y_study = vb_study.simulate();
+    ys_dec(:,ii) = interp1(vb_study.time,y_study(:,1),vb_sgl.time);
+end
+figure
+plot(vb_sgl.time,ys_dec);
+figure
+plot(steps,min(ys_dec,[],1));
+
+%% LUSAS time steps
+dat1 = [];
+dat2 = [];
+start_ind = find(dat2(:,1)>=1200/720,1,'first')
+dat1_dec = interp1(dat1(:,1),dat1(:,2),dat2(:,1));
+diff_lusas=abs(dat1_dec-dat2(:,2));
+mae_lusas = sum(diff_lusas(start_ind:end))/length(diff_lusas(start_ind:end))
+mae_lusas_perc = mae_lusas/abs(min(dat1(:,2)))
+max_diff = max(diff_lusas);
+max_diff_perc = max(diff_lusas)/abs(min(dat1(:,2)));
+fh = plotter('thesis_large')
+plot(dat2(:,1),100*diff_lusas/abs(min(dat1(:,2))))
+xlim([dat2(start_ind,1) max(dat1(:,1))]);
+fh.xlabel = 'time (sec)';
+fh.ylabel = 'Percent Difference';
+ytickformat(fh.ah, 'percentage');
+fh.refresh
+
+
+dat_copy = [max_diff max_diff_perc mae_lusas mae_lusas_perc];
 
 %% Visualize Double span
 

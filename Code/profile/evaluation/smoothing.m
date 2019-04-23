@@ -1,6 +1,6 @@
 %% smooth real profile with rolling straight-edge requirements
 % straightedge specifications
-s_length = 10:24; % ft
+s_length = 10:50; % ft
 s_dev = 0.125:0.125:0.5; % in
 
 % directory to save filtered profiles
@@ -18,14 +18,14 @@ dist = file_cont(:,1);
 profile = file_cont(:,2);
 
 % perform cursory filter and plot
-[prof_filt exitf] = straightedge_filter(profile,dist,s_length(1)*12,s_dev(1));
-figure
+[prof_filt exitf] = straightedge_filter(profile,dist,s_length(21)*12,s_dev(2));
+fh = plotter('thesis_large')
 plot(dist/12,profile)
 hold all
 plot(dist/12,prof_filt)
 xlabel('Distance (ft.)')
 ylabel('Elevation (in.)')
-legend({'Profile as measured'; 'Smoothed to 1/8" over 10ft.'})
+legend({'Profile as measured'; 'Smoothed to 1/4" over 30ft.'})
 
 %Define state space model parameters
 vb = sgl_bridge_vehicle();

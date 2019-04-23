@@ -14,8 +14,8 @@ function [mass, EI] = bridge2beam(freq, K_mid, span_length, spans)
 switch spans
     case 1
         % single span
-        EI = K_mid*span_length^3/48;
-        mass = K_mid*pi^2/(48*4*freq^2);  
+        EI = 2*K_mid*span_length^3/pi^4;
+        mass = EI*pi^2/((2*freq)^2*span_length^3); %K_mid*pi^2/(48*4*freq^2);  
     case 2    
         % 2-span continuous
         EI = K_mid*span_length^3/(pi^4); % K_mid*23*span_length^3/1536;
