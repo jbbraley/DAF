@@ -242,13 +242,24 @@ end
 figure
 plot(freq_fact,permute(min(yy(:,1,:,:),[],1),[3 4 1 2]))
 
-b_num = 3
+b_num = 2
 figure
     plot(tt,permute(yy(:,1,:,b_num),[1 3 4 2]))
     
 % freq index that causes max displacement
 [disp,min_ind] = min(permute(min(yy(:,1,:,:),[],1),[3 4 1 2]),[],1);
 freq_fact(min_ind)
+
+fh = plotter('thesis_large')
+plot(tt,permute(yy(:,1,[find(freq_fact==1) min_ind(b_num)],b_num),[1 3 2 4]))
+
+fh = plotter('thesis_large')
+plot(tt,permute(yy(:,3,find(freq_fact==1),b_num),[1 3 2 4])-yy(1,3,find(freq_fact==1),b_num))
+hold all
+plot(tt,permute(yy(:,3,min_ind(b_num),b_num),[1 3 2 4])-yy(1,3,min_ind(b_num),b_num))
+
+fh = plotter('thesis_large')
+plot(tt,permute(yy(:,5,[find(freq_fact==1) min_ind(b_num)],b_num),[1 3 2 4]))
 
 for ii = 1:length(EI)
     vbs.EI = EI(ii);
@@ -258,9 +269,10 @@ for ii = 1:length(EI)
 end
 
 fh = plotter('thesis_large')
-plot(freq_fact,-permute(min(disp_amp,[],1),[2 3 1]),'-','Marker','.')
+max_amp=-permute(min(disp_amp,[],1),[2 3 1]);
+plot(freq_fact,max_amp(:,2:end),'-','Marker','.')
 
-legend({'bridge1'; 'bridge2';'bridge3';'bridge4';'bridge5'});
+legend({'bridge1'; 'bridge2';'bridge3';'bridge4'}); %;'bridge5'});
 xlim([freq_fact(1) freq_fact(end)])
 xlabel('Frequency Factor')
 ylabel('Bridge Displacement Amplification')
