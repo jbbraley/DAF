@@ -13,7 +13,7 @@ putfile.path = 'C:\Users\John\Projects_Git\DAmp\traffic\for-thesis\platoons';
 veh_num = 5;
 
 % vehicle spacing 
-spacing = 15:5:100; % feet
+spacing = 380:20:500; % feet
 
 % Number of vehicles in traffic segment 
 NumVehicles = 4;
